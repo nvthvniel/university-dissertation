@@ -2,7 +2,7 @@
 
 ## Author
 - Name: Nathaniel Stevens <br>
-- Email: nathanielstevens@hotmail.co.uk <br>
+- Email: email@nathanielstevens.app <br>
 
 ## Supervisor
 - Name: Clinton Ingrams
