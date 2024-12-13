@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: network-contain-ec2
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+    "--aws-region"="string"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: snapshot-ec2
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+    "--aws-region"="string"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stop-ec2
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+    "--aws-region"="string"
+  
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: refresh-user-session
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: refresh-role-session
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: disable-user
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: disable-role
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam-contain-ec2
+
+data:
+  require_approval: "false"
+
+  approvers: |
+    02tins.seeker@icloud.com
+  
+  arguments: |
+    "--targets"="list"
+    "--aws-account-id"="string"
+    "--aws-region"="string"

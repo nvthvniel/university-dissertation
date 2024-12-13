@@ -1,0 +1,27 @@
+display_information:
+  name: jarvis
+features:
+  bot_user:
+    display_name: jarvis
+    always_online: false
+oauth_config:
+  scopes:
+    bot:
+      - app_mentions:read
+      - channels:history
+      - chat:write
+      - incoming-webhook
+      - users.profile:read
+      - users:read
+      - users:read.email
+settings:
+  event_subscriptions:
+    request_url: https://events-switchboard.slack.knative.your.domain.name.com
+    bot_events:
+      - app_mention
+  interactivity:
+    is_enabled: true
+    request_url: https://interactions-switchboard.slack.knative.your.domain.name.com
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

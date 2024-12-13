@@ -1,0 +1,132 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: events-switchboard
+
+spec:
+  template:
+
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: "1"
+
+    spec:
+      containers:
+      - name: events-switchboard
+        image: p2598625/development-project:slack-events-switchboard
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        - name: SLACK_SIGNING_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jarvis-slack-signing-secret
+              key: secret
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: switchboard
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: interactions-switchboard
+
+spec:
+  template:
+
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: "1"
+
+    spec:
+      containers:
+      - name: interactions-switchboard
+        image: p2598625/development-project:slack-interactions-switchboard
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        - name: SLACK_SIGNING_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jarvis-slack-signing-secret
+              key: secret
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: switchboard
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: helper
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: "1"
+
+    spec:
+      containers:
+      - name: slack-helper
+        image: p2598625/development-project:slack-helper
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+
+        - name: SLACK_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: jarvis-slack-api-token
+              key: secret
+
+
+      imagePullSecrets:
+      - name: dev-project-registry

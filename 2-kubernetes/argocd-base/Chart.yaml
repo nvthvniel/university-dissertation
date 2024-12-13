@@ -1,0 +1,17 @@
+apiVersion: v2
+name: argocd-base
+description: A Helm chart for ArgoCD installation and configuration
+
+type: application
+version: 5.53.14
+appVersion: "5.53.14"
+
+sources:
+- https://github.com/argoproj/argo-cd/blob/master/manifests/crds/application-crd.yaml
+- https://github.com/argoproj/argo-cd/blob/master/manifests/crds/applicationset-crd.yaml
+- https://github.com/argoproj/argo-cd/blob/master/manifests/crds/appproject-crd.yaml
+
+dependencies:
+  - name: argo-cd
+    version: "5.53.14"
+    repository: "https://argoproj.github.io/argo-helm"

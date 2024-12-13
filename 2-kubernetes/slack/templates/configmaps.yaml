@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: switchboard
+  namespace: slack
+
+data:
+  bot_id: "U0676P8JKEH"
+
+  commands.mapping: |
+    "help"="http://help.jarvis.svc.cluster.local"
+    "stop-ec2"="http://stop-ec2.aws.svc.cluster.local"
+    "network-contain-ec2"="http://network-contain-ec2.aws.svc.cluster.local"
+    "iam-contain-ec2"="http://iam-contain-ec2.aws.svc.cluster.local"
+    "snapshot-ec2"="http://snapshot-ec2.aws.svc.cluster.local"
+    "refresh-user-session"="http://refresh-user-session.aws.svc.cluster.local"
+    "refresh-role-session"="http://refresh-role-session.aws.svc.cluster.local"
+    "disable-user"="http://disable-user.aws.svc.cluster.local"
+    "disable-role"="http://disable-role.aws.svc.cluster.local"
+    "runbook-ec2"="http://runbook-ec2.jarvis.svc.cluster.local"

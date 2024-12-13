@@ -1,0 +1,11 @@
+apiVersion: v2
+name: knative-serving
+description: A Helm chart for knative
+
+type: application
+version: 1.13.1
+appVersion: "1.13.1"
+
+sources:
+- https://github.com/knative/operator/releases/tag/knative-v1.13.1
+- https://github.com/knative-extensions/net-certmanager/releases/tag/knative-v1.13.0

@@ -1,0 +1,27 @@
+argo-cd:
+  server:
+    service:
+      type: LoadBalancer
+  
+  # Utilise crds directory instead (https://helm.sh/docs/chart_best_practices/custom_resource_definitions/#method-1-let-helm-do-it-for-you)
+  crds:
+    install: false
+
+  # Provided at build through terraform
+  # configs:
+  #   secret:
+  #     argocdServerAdminPassword: ...
+
+project: "ctec3451-development-project"
+repoURL: "https://github.com/nvthvniel/development-project.git"
+
+github_app:
+  id: "809563"
+  install_id: "46656119"
+  # private_key: provided at build through terraform
+
+
+# Provided at build through terraform
+# aws:
+#   account_id: ...
+#   domain_name: ...

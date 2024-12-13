@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: linkerd
+  namespace: argocd
+
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+    
+spec:
+  project: {{ .Values.project }}
+
+  source:
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: HEAD
+    path: "code/2-kubernetes/linkerd"
+
+    helm:
+      valuesObject:
+        linkerd-control-plane:
+          identityTrustAnchorsPEM: {{ .Values.certificate_authority_cert | toString | quote }}
+
+          identity:
+            issuer:
+              tls:
+                crtPEM: {{ .Values.issuer_cert | toString | quote }}
+                keyPEM: {{ .Values.issuer_private_key | toString | quote }}
+      
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: linkerd
+  
+  syncPolicy:
+    
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    
+    syncOptions:
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - Prunelast=true
+    - RespectIgnoreDifferences=true
+    - ServerSideApply=true
+
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

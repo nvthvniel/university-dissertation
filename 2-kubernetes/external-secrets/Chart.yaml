@@ -1,0 +1,15 @@
+apiVersion: v2
+name: external-secrets
+description: A Helm chart for external-secrets installation and configuration
+
+type: application
+version: 0.9.13
+appVersion: "0.9.13"
+
+sources:
+- https://github.com/external-secrets/external-secrets/blob/main/deploy/crds/bundle.yaml
+
+dependencies:
+  - name: external-secrets
+    version: "0.9.13"
+    repository: "https://charts.external-secrets.io"

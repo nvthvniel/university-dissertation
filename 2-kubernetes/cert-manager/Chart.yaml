@@ -1,0 +1,15 @@
+apiVersion: v2
+name: cert-manager
+description: A Helm chart for cert-manager installation and configuration
+
+type: application
+version: 1.14.3
+appVersion: "1.14.3"
+
+sources:
+- https://github.com/cert-manager/cert-manager/releases/download/v1.14.3/cert-manager.crds.yaml
+
+dependencies:
+  - name: cert-manager
+    version: "1.14.3"
+    repository: "https://charts.jetstack.io"

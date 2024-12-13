@@ -1,0 +1,4 @@
+external-secrets:
+  installCRDs: false
+
+role_name: jarvis-external-secrets

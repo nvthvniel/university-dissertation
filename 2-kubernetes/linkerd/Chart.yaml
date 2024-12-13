@@ -1,0 +1,16 @@
+apiVersion: v2
+name: linkerd
+description: A Helm chart for linkerd installation and configuration
+
+type: application
+version: 1.16.11
+appVersion: "1.16.11"
+
+dependencies:
+  - name: linkerd-crds
+    version: "1.8.0"
+    repository: "https://helm.linkerd.io/stable"
+  
+  - name: linkerd-control-plane
+    version: "1.16.11"
+    repository: "https://helm.linkerd.io/stable"

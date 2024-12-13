@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aws
+  namespace: argocd
+
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+    
+spec:
+  project: {{ .Values.project }}
+
+  source:
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: HEAD
+    path: "code/2-kubernetes/aws"
+
+    helm:
+      valuesObject:
+        aws_account_id: {{ .Values.aws_account_id | toString | quote}}
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aws
+  
+  ignoreDifferences:
+  - group: serving.knative.dev
+    kind: Service
+    jsonPointers:
+    - /spec/template/spec/containers/0/readinessProbe
+    - /spec/template/spec/containers/0/resources
+  
+  syncPolicy:
+    
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    
+    syncOptions:
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - Prunelast=true
+    - RespectIgnoreDifferences=true
+    - ServerSideApply=true
+
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+        external-secrets-target: aws
+    
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

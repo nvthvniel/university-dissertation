@@ -1,0 +1,222 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: help
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      containers:
+      - name: help
+        image: p2598625/development-project:jarvis-help
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: commands-mapping
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: dynamodb-helper
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: dynamodb-access
+
+      containers:
+      - name: dynamodb-helper
+        image: p2598625/development-project:jarvis-dynamodb-helper
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: dynamodb-helper
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: s3-helper
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: s3-access
+
+      containers:
+      - name: s3-helper
+        image: p2598625/development-project:jarvis-s3-helper
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: s3-helper
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: chatgpt-helper
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+    
+    metadata:
+        annotations:
+          autoscaling.knative.dev/min-scale: "1"
+
+    spec:
+      serviceAccountName: chatgpt-helper
+
+      containers:
+      - name: chatgpt-helper
+        image: p2598625/development-project:jarvis-chatgpt-helper
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        - name: CHATGPT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: jarvis-chatgpt-api-token
+              key: secret
+        
+        volumeMounts:
+        - name: "commands-mapping"
+          mountPath: "/home/autouser/scripts/commands_mapping"
+          readOnly: true
+        
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "commands-mapping"
+        configMap:
+          name: commands-mapping
+      
+      - name: "config"
+        configMap:
+          name: chatgpt-helper
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: runbook-ec2
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+
+      containers:
+      - name: runbook-ec2
+        image: p2598625/development-project:jarvis-runbook-ec2
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:        
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: runbook-ec2
+
+      imagePullSecrets:
+      - name: dev-project-registry

@@ -1,0 +1,20 @@
+apiVersion: operator.knative.dev/v1beta1
+kind: KnativeServing
+metadata:
+  name: knative-serving
+  namespace: default
+
+spec:
+  
+  ingress:
+    kourier:
+      enabled: true
+      
+  config:
+    network:
+      ingress-class: "kourier.ingress.networking.knative.dev"
+      external-domain-tls: "Enabled"
+      auto-tls: "Enabled"
+    
+    domain:
+      "knative.{{ .Values.domain_name }}": ""

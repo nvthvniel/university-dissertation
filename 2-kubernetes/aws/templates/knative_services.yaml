@@ -1,0 +1,333 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: network-contain-ec2
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: aws-stop-ec2
+        image: p2598625/development-project:aws-network-contain-ec2
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: network-contain-ec2
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: snapshot-ec2
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: aws-stop-ec2
+        image: p2598625/development-project:aws-snapshot-ec2
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: snapshot-ec2
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: stop-ec2
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: aws-stop-ec2
+        image: p2598625/development-project:aws-stop-ec2
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: stop-ec2
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: refresh-user-session
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: aws-refresh-user-session
+        image: p2598625/development-project:aws-refresh-user-session
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: refresh-user-session
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: refresh-role-session
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: aws-refresh-user-session
+        image: p2598625/development-project:aws-refresh-role-session
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: refresh-role-session
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: disable-user
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: disable-user
+        image: p2598625/development-project:aws-disable-user
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: disable-user
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: disable-role
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: disable-user
+        image: p2598625/development-project:aws-disable-role
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: disable-role
+
+      imagePullSecrets:
+      - name: dev-project-registry
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: iam-contain-ec2
+
+  labels:
+    networking.knative.dev/visibility: cluster-local
+
+spec:
+  template:
+
+    spec:
+      serviceAccountName: jarvis-irsa
+      
+      containers:
+      - name: iam-contain-ec2
+        image: p2598625/development-project:aws-iam-contain-ec2
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+
+        env:
+        - name: RELEASE
+          value: "v0.01"
+        
+        volumeMounts:
+        - name: "config"
+          mountPath: "/home/autouser/scripts/config"
+          readOnly: true
+      
+      volumes:
+      - name: "config"
+        configMap:
+          name: iam-contain-ec2
+
+      imagePullSecrets:
+      - name: dev-project-registry

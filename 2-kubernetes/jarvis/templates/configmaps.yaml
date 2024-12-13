@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: commands-mapping
+
+data:
+  
+  help: |
+    description="Lists all possible commands"
+    usage="help"
+  
+  stop-ec2: |
+    description="Stops EC2 instance"
+    usage="stop-ec2 --targets `i-xxx,i-yyy` --aws-account-id `AWS account ID` --aws-region `AWS region code`"
+  
+  network-contain-ec2: |
+    description="Applies deny all security group to EC2 instance"
+    usage="network-contain-ec2 --targets `i-xxx,i-yyy` --aws-account-id `AWS account ID` --aws-region `AWS region code`"
+  
+  snapshot-ec2: |
+    description="Create snapshot of all volumes attached to EC2 instance"
+    usage="snapshot-ec2 --targets `i-xxx,i-yyy` --aws-account-id `AWS account ID` --aws-region `AWS region code`"
+
+  iam-contain-ec2: |
+    description="Applies deny all policy to EC2 instance's instance profile"
+    usage="iam-contain-ec2 --targets `i-xxx,i-yyy` --aws-account-id `AWS account ID` --aws-region `AWS region code`"
+  
+  refresh-user-session: |
+    description="Applies policy to IAM user to invalidate temporary credentials made"
+    usage="refresh-user-session --targets `user name` --aws-account-id `AWS account ID`"
+  
+  refresh-role-session: |
+    description="Applies policy to IAM role to invalidate temporary credentials made"
+    usage="refresh-role-session --targets `role name` --aws-account-id `AWS account ID`"
+  
+  disable-user: |
+    description="Applies deny all policy to IAM user"
+    usage="disable-user --targets `user name` --aws-account-id `AWS account ID`"
+  
+  disable-role: |
+    description="Applies deny all policy to IAM role"
+    usage="disable-role --targets `role name` --aws-account-id `AWS account ID`"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dynamodb-helper
+
+data:
+  table_name: "jarvis"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-helper
+  namespace: jarvis
+
+data:
+  bucket_name: "jarvis-logs-{{ .Values.aws_account_id }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatgpt-helper
+
+data:
+  network-contain-ec2: |
+    prompt="Block network access to i-xxx and i-yyy in us-east-1 00000000000"
+    response="{'Targets': ['i-xxx', 'i-yyy'], 'Action': 'network-contain-ec2'}"
+  
+  iam-contain-ec2: |
+    prompt="Prevent i-xxx in 00000000000 and eu-west-1 from accessing other AWS resource"
+    response="{'Targets': ['i-xxx'], 'Action': 'iam-contain-ec2'}"
+  
+  refresh-user-session: |
+    prompt="Revoke any temporary credentials made by the jarvis-demo user in 00000000000"
+    response="{'Targets': ['jarvis-demo'], 'Action': 'refresh-user-session'}"
+
+  snapshot-ec2: |
+    prompt="Take a copy of i-zzz in 00000000000 us-east-1"
+    response="{'Targets': ['i-zzz'], 'Action': 'snapshot-ec2'}"
+  
+  stop-ec2: |
+    prompt="Stop i-zzz in 00000000000 us-east-1"
+    response="{'Targets': ['i-zzz'], 'Action': 'stop-ec2'}"
+  
+  disable-user: |
+    prompt="Disable jarvis-demo user in 00000000000"
+    response="{'Targets': ['jarvis-demo'], 'Action': 'disable-user'}"
+  
+  disable-role: |
+    prompt="Remove jarvis-demo role's permissions in 00000000000"
+    response="{'Targets': ['jarvis-demo'], 'Action': 'disable-role'}"
+  
+  refresh-role-session: |
+    prompt="Invalidate any STS tokens created from jarvis-demo role in 00000000000"
+    response="{'Targets': ['jarvis-demo'], 'Action': 'refresh-role-session'}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: runbook-ec2
+
+data:
+  services: |
+    http://snapshot-ec2.aws.svc.cluster.local
+    http://network-contain-ec2.aws.svc.cluster.local
+    http://iam-contain-ec2.aws.svc.cluster.local
+    http://stop-ec2.aws.svc.cluster.local

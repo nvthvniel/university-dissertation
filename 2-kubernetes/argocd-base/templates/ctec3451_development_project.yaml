@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ .Values.project }}
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  description: "Development Project"
+
+  sourceRepos:
+  - {{ .Values.repoURL }}
+
+  destinations:
+  - namespace: "*"
+    server: https://kubernetes.default.svc
+  
+  roles:
+  - name: read-only
+    description: Read-only privileges to project
+    policies:
+    - p, proj:my-project:read-only, applications, get, my-project/*, allow
+    groups:
+    - my-oidc-group
+
+  - name: ci-role
+    description: Sync privileges for project 
+    policies:
+    - p, proj:my-project:ci-role, applications, sync, my-project/guestbook-dev, allow
+  
+  clusterResourceWhitelist:
+  - group: "*"
+    kind: "*"
+  
+  namespaceResourceWhitelist:
+  - group: "*"
+    kind: "*"

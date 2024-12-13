@@ -1,0 +1,192 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: config.webhook.serving.knative.dev
+
+webhooks:
+  - admissionReviewVersions:
+      - v1
+      - v1beta1
+    clientConfig:
+      caBundle: >-
+        LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNVRENDQWZXZ0F3SUJBZ0lSQU9XR3lZTXJ4Tm94bW5LNFp6eGZCend3Q2dZSUtvWkl6ajBFQXdJd1BERVUKTUJJR0ExVUVDaE1MYTI1aGRHbDJaUzVrWlhZeEpEQWlCZ05WQkFNVEczZGxZbWh2YjJzdWEyNWhkR2wyWlMxegpaWEoyYVc1bkxuTjJZekFlRncweU5EQXlNalV4T0RNeE1qWmFGdzB5TkRBek1ETXhPRE14TWpaYU1Ed3hGREFTCkJnTlZCQW9UQzJ0dVlYUnBkbVV1WkdWMk1TUXdJZ1lEVlFRREV4dDNaV0pvYjI5ckxtdHVZWFJwZG1VdGMyVnkKZG1sdVp5NXpkbU13V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJ5eFM2eE5wUVcrTkM2OWQwagpxRnAvTFlrTzIzbWtRQ3FvTFF0WWJrb05udVIwcGRyZldvSGQ4Q3BQOXBpcjFDWVF4YUFseEYwbVFFOHhXWHZnCmFyZXpvNEhYTUlIVU1BNEdBMVVkRHdFQi93UUVBd0lDaERBZEJnTlZIU1VFRmpBVUJnZ3JCZ0VGQlFjREFRWUkKS3dZQkJRVUhBd0l3RHdZRFZSMFRBUUgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVaWY5VzVMbkFubnJwT3k4ego1dHZLUnpicDRPMHdjd1lEVlIwUkJHd3dhb0lIZDJWaWFHOXZhNElYZDJWaWFHOXZheTVyYm1GMGFYWmxMWE5sCmNuWnBibWVDRzNkbFltaHZiMnN1YTI1aGRHbDJaUzF6WlhKMmFXNW5Mbk4yWTRJcGQyVmlhRzl2YXk1cmJtRjAKYVhabExYTmxjblpwYm1jdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0NnWUlLb1pJemowRUF3SURTUUF3UmdJaApBTEV6N1AyMlVUdlVub1ZUMkFVRDhYdjBrRjhPSWtMOFdDTkcyTmQ5YVkrNkFpRUFtRC9ZMzk5enlwWXl5NWRHCjVoRm1WbC84cTBqQlBOK2hrTjZ6U0kwbUgyST0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+      service:
+        name: webhook
+        namespace: knative-serving
+        path: /config-validation
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: config.webhook.serving.knative.dev
+    namespaceSelector: {}
+    objectSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+            - knative-serving
+        - key: app.kubernetes.io/component
+          operator: In
+          values:
+            - autoscaler
+            - controller
+            - networking
+            - tracing
+    rules:
+      - apiGroups:
+          - ''
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - configmaps/*
+        scope: Namespaced
+    sideEffects: None
+    timeoutSeconds: 10
+
+---
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    manifestival: new
+  generation: 918
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/name: knative-serving
+    app.kubernetes.io/version: 1.13.1
+    argocd.argoproj.io/instance: knative-serving
+  managedFields:
+    - apiVersion: admissionregistration.k8s.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            'f:argocd.argoproj.io/instance': {}
+        'f:webhooks':
+          'k:{"name":"config.webhook.serving.knative.dev"}':
+            .: {}
+            'f:admissionReviewVersions': {}
+            'f:clientConfig':
+              'f:service':
+                'f:name': {}
+                'f:namespace': {}
+                'f:path': {}
+                'f:port': {}
+            'f:failurePolicy': {}
+            'f:matchPolicy': {}
+            'f:name': {}
+            'f:namespaceSelector': {}
+            'f:objectSelector': {}
+            'f:rules': {}
+            'f:sideEffects': {}
+            'f:timeoutSeconds': {}
+      manager: argocd-controller
+      operation: Apply
+      time: '2024-03-10T15:49:18Z'
+    - apiVersion: admissionregistration.k8s.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:kubectl.kubernetes.io/last-applied-configuration': {}
+            'f:manifestival': {}
+          'f:labels':
+            .: {}
+            'f:app.kubernetes.io/component': {}
+            'f:app.kubernetes.io/name': {}
+            'f:app.kubernetes.io/version': {}
+        'f:webhooks':
+          .: {}
+          'k:{"name":"config.webhook.serving.knative.dev"}':
+            .: {}
+            'f:admissionReviewVersions': {}
+            'f:clientConfig':
+              .: {}
+              'f:service':
+                .: {}
+                'f:name': {}
+                'f:namespace': {}
+                'f:port': {}
+            'f:failurePolicy': {}
+            'f:matchPolicy': {}
+            'f:name': {}
+            'f:namespaceSelector': {}
+            'f:sideEffects': {}
+            'f:timeoutSeconds': {}
+      manager: manifestival
+      operation: Update
+      time: '2024-03-10T15:43:16Z'
+    - apiVersion: admissionregistration.k8s.io/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:ownerReferences':
+            .: {}
+            'k:{"uid":"135c6a88-9ad9-444b-999a-994a0a217ea5"}': {}
+        'f:webhooks':
+          'k:{"name":"config.webhook.serving.knative.dev"}':
+            'f:clientConfig':
+              'f:caBundle': {}
+              'f:service':
+                'f:path': {}
+            'f:rules': {}
+      manager: webhook
+      operation: Update
+      time: '2024-03-10T15:49:18Z'
+  name: config.webhook.serving.knative.dev
+  ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Namespace
+      name: knative-serving
+      uid: 135c6a88-9ad9-444b-999a-994a0a217ea5
+  resourceVersion: '22960'
+  uid: 5def26f6-f9b3-4066-b4bf-dee8378c5721
+webhooks:
+  - admissionReviewVersions:
+      - v1
+      - v1beta1
+    clientConfig:
+      caBundle: >-
+        LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNUekNDQWZXZ0F3SUJBZ0lSQUx5VVAvY0VRTzl1MkU0WGFVazJGa0l3Q2dZSUtvWkl6ajBFQXdJd1BERVUKTUJJR0ExVUVDaE1MYTI1aGRHbDJaUzVrWlhZeEpEQWlCZ05WQkFNVEczZGxZbWh2YjJzdWEyNWhkR2wyWlMxegpaWEoyYVc1bkxuTjJZekFlRncweU5EQXpNVEF4TlRFNE5UbGFGdzB5TkRBek1UY3hOVEU0TlRsYU1Ed3hGREFTCkJnTlZCQW9UQzJ0dVlYUnBkbVV1WkdWMk1TUXdJZ1lEVlFRREV4dDNaV0pvYjI5ckxtdHVZWFJwZG1VdGMyVnkKZG1sdVp5NXpkbU13V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVFuUytnckdkbGQ1MzRFVGl0dApXOU01bEdjcVd1MDdLNG81TWZTdS9Oa3hTYUNLODM5bUZYdTMwNm1FR1M0d3pVL2lxUWczSlV3Y25jdzg2VUJICkRMeHlvNEhYTUlIVU1BNEdBMVVkRHdFQi93UUVBd0lDaERBZEJnTlZIU1VFRmpBVUJnZ3JCZ0VGQlFjREFRWUkKS3dZQkJRVUhBd0l3RHdZRFZSMFRBUUgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVaFU0ZVdUVjlOMlFOZ20wdwpmK21SZkh5cnByc3djd1lEVlIwUkJHd3dhb0lIZDJWaWFHOXZhNElYZDJWaWFHOXZheTVyYm1GMGFYWmxMWE5sCmNuWnBibWVDRzNkbFltaHZiMnN1YTI1aGRHbDJaUzF6WlhKMmFXNW5Mbk4yWTRJcGQyVmlhRzl2YXk1cmJtRjAKYVhabExYTmxjblpwYm1jdWMzWmpMbU5zZFhOMFpYSXViRzlqWVd3d0NnWUlLb1pJemowRUF3SURTQUF3UlFJZwpRamtXSHFVMWRTNnFjMXZ4OHhjb1lRWnYxVmQ5TmRhVHJUMUFHRkVFeEhFQ0lRQ2QvNjRJUXNnU0NkZDRvaDFqCmM5NlN1TTY5Q3dWMjZZNVFjSW01ZW10c1FRPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+      service:
+        name: webhook
+        namespace: knative-serving
+        path: /config-validation
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: config.webhook.serving.knative.dev
+    namespaceSelector: {}
+    objectSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+            - knative-serving
+        - key: app.kubernetes.io/component
+          operator: In
+          values:
+            - autoscaler
+            - controller
+            - networking
+            - tracing
+    rules:
+      - apiGroups:
+          - ''
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - configmaps/*
+        scope: Namespaced
+    sideEffects: None
+    timeoutSeconds: 10

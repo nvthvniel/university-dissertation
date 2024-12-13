@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-kustomize-plugin
+  namespace: argocd
+
+data:
+  # Configure plugin
+  plugin.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+        name: helm-kustomize-plugin
+        
+    spec:
+        version: v1.0
+
+        init:
+            command: [sh, /var/run/argocd/helm-kustomize-plugin/init.sh]
+
+        generate:
+            command: [sh, /var/run/argocd/helm-kustomize-plugin/generate.sh]
+          
+        discover:
+            fileName: "./templates/kustomization.yaml"
+        
+        parameters:
+          static:
+            - name: helm-parameters
+              title: "Helm Paramaters"
+              tooltip: "Paramaters for values.yaml"
+              required: true
+              itemType: string
+              collectionType: map
+    
+
+  # Download dependency chart(s)
+  # Fromulate helm values from provided map, helm-paramaters, in app
+  # Template manifests using values
+  init.sh: |
+    #!/bin/bash
+
+    helm dependency build
+
+    PARAMETERS=$(echo "$ARGOCD_APP_PARAMETERS" | /tools/jq -r '.[] | select(.name == "helm-parameters").map | to_entries | map("\(.key)=\(.value)") | .[] | "--set=" + .')
+    
+    echo "ArgoCD Parameters: $ARGOCD_APP_PARAMETERS"
+    echo "Paramaters: $PARAMETERS"
+    
+    echo ". $PARAMETERS" | xargs /tools/helm template --include-crds --output-dir rendered
+  
+  # Build templates with kustomize
+  generate.sh: |
+    #!/bin/bash
+    
+    /tools/kubectl kustomize "rendered/$(/tools/helm show chart . | /tools/yq ".name")/templates/"

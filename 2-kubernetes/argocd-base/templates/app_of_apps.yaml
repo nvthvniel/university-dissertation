@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  namespace: argocd
+
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+
+spec:
+  project: {{ .Values.project }}
+
+  revisionHistoryLimit: 3
+
+  source:
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: HEAD
+    path: "code/2-kubernetes/argocd-apps"
+
+    helm:
+      valuesObject:
+        project: {{ .Values.project }}
+        repoURL: {{ .Values.repoURL }}
+        aws_account_id: {{ .Values.aws_account_id | toString | quote}}
+        aws_region: {{ .Values.aws_region }}
+        domain_name: {{ .Values.domain_name }}
+        certificate_authority_cert: {{ .Values.linkerd.certificate_authority_cert | toString | quote }}
+        issuer_cert: {{ .Values.linkerd.issuer_cert | toString | quote }}
+        issuer_private_key: {{ .Values.linkerd.issuer_private_key | toString | quote }}
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  
+  syncPolicy:
+
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    
+    syncOptions:
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - Prunelast=true
+    - RespectIgnoreDifferences=true
+    - ServerSideApply=true
+
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

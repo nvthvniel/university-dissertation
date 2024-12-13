@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-base-repo-server
+  namespace: argocd
+
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: helm-kustomize-plugin-setup
+          image: debian:stable-slim
+          command:
+            - sh
+            - -c
+            - |
+              apt update
+              apt install wget -y
+              wget https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64 -O /tools/jq && chmod +x /tools/jq
+              wget https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz -O - | tar xz && mv linux-amd64/helm /tools/helm && chmod +x /tools/helm
+              wget "https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kubectl" -O /tools/kubectl && chmod +x /tools/kubectl
+              wget https://github.com/mikefarah/yq/releases/download/v4.42.1/yq_linux_amd64.tar.gz -O - | tar xz && mv yq_linux_amd64 /tools/yq && chmod +x /tools/yq
+
+          volumeMounts:
+            - mountPath: /tools
+              name: helm-kustomize-plugin-tools
+
+      containers:
+        - name: helm-kustomize-plugin
+          command: [/var/run/argocd/argocd-cmp-server]
+          args: [--loglevel, debug]
+          image: debian:stable-slim
+
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+
+          volumeMounts:
+            - mountPath: /var/run/argocd
+              name: var-files
+            
+            - mountPath: /home/argocd/cmp-server/plugins
+              name: plugins
+
+            - mountPath: /tools
+              name: helm-kustomize-plugin-tools
+
+            - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+              subPath: plugin.yaml
+              name: helm-kustomize-plugin-cm
+
+            - mountPath: /var/run/argocd/helm-kustomize-plugin/generate.sh
+              subPath: generate.sh
+              name: helm-kustomize-plugin-cm
+
+            - mountPath: /var/run/argocd/helm-kustomize-plugin/init.sh
+              subPath: init.sh
+              name: helm-kustomize-plugin-cm
+
+            - mountPath: /usr/local/bin
+              name: helm-kustomize-plugin-tools
+        
+      volumes:
+        - configMap:
+            name: helm-kustomize-plugin
+          name: helm-kustomize-plugin-cm
+
+        - emptyDir: {}
+          name: helm-kustomize-plugin-tools

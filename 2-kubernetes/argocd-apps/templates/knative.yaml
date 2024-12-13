@@ -1,0 +1,77 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: knative-serving
+  namespace: argocd
+
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+    
+spec:
+  project: {{ .Values.project }}
+
+  source:
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: HEAD
+    path: "code/2-kubernetes/knative-serving"
+
+    plugin:
+      name: helm-kustomize-plugin-v1.0
+      parameters:
+        - name: helm-parameters
+          map:
+            namespace: knative-serving
+            domain_name: {{ .Values.domain_name }}
+      
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: knative-serving
+  
+  ignoreDifferences:
+  - group: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: knative-serving-operator-aggregated-stable
+    jsonPointers:
+    - /rules
+  
+  - group: ""
+    kind: ConfigMap
+    name: config-logging
+    jsonPointers:
+    - /data/_example
+  
+  - group: ""
+    kind: ConfigMap
+    name: config-observability
+    jsonPointers:
+    - /data/_example
+  
+  syncPolicy:
+    
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    
+    syncOptions:
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - Prunelast=true
+    - RespectIgnoreDifferences=true
+    - ServerSideApply=true
+
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: argocd
+    
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
